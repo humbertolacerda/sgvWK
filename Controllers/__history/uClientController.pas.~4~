@@ -1,0 +1,59 @@
+unit uClientController;
+
+interface
+Uses
+    uClientModel, System.SysUtils, Vcl.ExtCtrls, System.Classes, System.Json.Types, System.JSON.Writers;
+
+    Type
+        ClientController = class
+         private
+           { private declarations }
+         protected
+           { protected declarations }
+         public
+           { public declarations }
+           procedure SetUF(const Value: String);
+
+           Procedure SaveClient(cliente : TCliente);
+           Procedure DeleteClient(Id : Integer);
+           Function getClientID(Id : Integer): TCliente;
+           //Function getAllClient(): TList;
+
+         published
+           { published declarations }
+         end;
+implementation
+
+{ ClientController }
+
+procedure ClientController.DeleteClient(Id: Integer);
+begin
+    //
+end;
+
+function ClientController.getClientID(Id: Integer): TCliente;
+Var
+  vlSqlClient, vc : String;
+begin
+    vlSqlClient := 'Select * from public.tbl_wk_clientes where codigo = ' + IntToStr(Id);
+
+
+
+//    Cliente : TList;
+//    Cliente := TList.Create;
+
+
+
+end;
+
+procedure ClientController.SaveClient(cliente: TCliente);
+begin
+
+end;
+
+procedure ClientController.SetUF(const Value: String);
+begin
+
+end;
+
+end.

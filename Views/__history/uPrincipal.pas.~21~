@@ -1,0 +1,64 @@
+unit uPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ComCtrls, Vcl.ExtCtrls,
+  Vcl.TitleBarCtrls, Vcl.StdCtrls, Vcl.Buttons, Vcl.ToolWin, Vcl.ActnMan,
+  Vcl.ActnCtrls, Vcl.ActnMenus;
+
+type
+  TfrmPrincipal = class(TForm)
+    mmPrincipal: TMainMenu;
+    Cadastro1: TMenuItem;
+    Clientes1: TMenuItem;
+    Produtos1: TMenuItem;
+    Produtos2: TMenuItem;
+    Fornecedores1: TMenuItem;
+    Fornecedores2: TMenuItem;
+    Sair1: TMenuItem;
+    sbPrincipal: TStatusBar;
+    tmPrincipal: TTimer;
+    BitBtn1: TBitBtn;
+    Movimentao1: TMenuItem;
+    Vendas1: TMenuItem;
+    procedure Sair1Click(Sender: TObject);
+    procedure tmPrincipalTimer(Sender: TObject);
+    procedure Vendas1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+implementation
+  Uses
+    uVendas;
+{$R *.dfm}
+
+procedure TfrmPrincipal.Sair1Click(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmPrincipal.tmPrincipalTimer(Sender: TObject);
+begin
+  sbPrincipal.Panels[2].Text := FormatDateTime('HH:MM:SS', Now);
+  sbPrincipal.Panels[3].Text := FormatDateTime('dd/MM/yyyy', Now);
+end;
+
+procedure TfrmPrincipal.Vendas1Click(Sender: TObject);
+begin
+  If (frmVendas = nil) Then
+  Begin
+    frmVendas := TfrmVendas.Create(Self);
+  End;
+  frmVendas.Show();
+
+end;
+
+end.

@@ -1,0 +1,53 @@
+unit uPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.ComCtrls;
+
+type
+  TfrmPrincipal = class(TForm)
+    mmPrincipal: TMainMenu;
+    Arquivos1: TMenuItem;
+    Clientes1: TMenuItem;
+    Clientes2: TMenuItem;
+    Vendedor1: TMenuItem;
+    Vendedor2: TMenuItem;
+    N1: TMenuItem;
+    Sair1: TMenuItem;
+    sbPrincipal: TStatusBar;
+    tmPrincipal: TTimer;
+    procedure Sair1Click(Sender: TObject);
+    procedure tmPrincipalTimer(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+begin
+  sbPrincipal.Visible := true;
+
+end;
+
+procedure TfrmPrincipal.Sair1Click(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmPrincipal.tmPrincipalTimer(Sender: TObject);
+begin
+ // sbPrincipal[0] := 'dddddd';
+end;
+
+end.

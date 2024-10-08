@@ -1,0 +1,93 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 0
+  Top = 0
+  ClientHeight = 678
+  ClientWidth = 878
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  FormStyle = fsMDIForm
+  KeyPreview = True
+  Menu = mmPrincipal
+  WindowState = wsMaximized
+  TextHeight = 15
+  object sbPrincipal: TStatusBar
+    Left = 0
+    Top = 659
+    Width = 878
+    Height = 19
+    Panels = <
+      item
+        Text = 'SGV - Sistema de Gest'#227'o de Vendas.'
+        Width = 250
+      end
+      item
+        Text = 'Author: Humberto Lacerda'
+        Width = 200
+      end
+      item
+        Text = 'HH:mm'
+        Width = 50
+      end
+      item
+        Alignment = taCenter
+        Text = 'dd/MM/yyyy'
+        Width = 120
+      end
+      item
+        Text = 'Mensagens'
+        Width = 600
+      end>
+    ExplicitTop = 422
+    ExplicitWidth = 624
+  end
+  object BitBtn1: TBitBtn
+    Left = 640
+    Top = 560
+    Width = 230
+    Height = 93
+    Caption = 'VENDAS'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -37
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    OnClick = BitBtn1Click
+  end
+  object mmPrincipal: TMainMenu
+    Left = 288
+    Top = 32
+    object Cadastro1: TMenuItem
+      Caption = '&Cadastro'
+      object Clientes1: TMenuItem
+        Caption = '&Clientes'
+      end
+      object Produtos1: TMenuItem
+        Caption = '&Produtos'
+      end
+      object Produtos2: TMenuItem
+        Caption = '&Vendedores'
+      end
+      object Fornecedores1: TMenuItem
+        Caption = '&Fornecedores'
+      end
+      object Fornecedores2: TMenuItem
+        Caption = '-'
+      end
+      object Sair1: TMenuItem
+        Caption = '&Sair'
+        OnClick = Sair1Click
+      end
+    end
+  end
+  object tmPrincipal: TTimer
+    OnTimer = tmPrincipalTimer
+    Left = 288
+    Top = 104
+  end
+end

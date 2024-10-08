@@ -1,0 +1,19 @@
+unit uClientModel;
+
+interface
+    type TCliente = class
+        Codigo: Integer;
+        Nome:   String;
+        Cidade: String;
+        UF      String;
+    end;
+
+
+implementation
+
+initialization
+
+finalization
+
+
+end.

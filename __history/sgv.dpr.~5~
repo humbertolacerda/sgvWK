@@ -1,0 +1,15 @@
+program sgv;
+
+uses
+  Vcl.Forms,
+  uPrincipal in 'Views\uPrincipal.pas' {frmPrincipal},
+  uVendas in 'Views\uVendas.pas' {frmVendas};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.Run;
+end.

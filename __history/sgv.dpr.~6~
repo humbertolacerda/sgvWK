@@ -1,0 +1,17 @@
+program sgv;
+
+uses
+  Vcl.Forms,
+  uPrincipal in 'Views\uPrincipal.pas' {frmPrincipal},
+  uVendas in 'Views\uVendas.pas' {frmVendas},
+  DAOConection in 'DAO\DAOConection.pas' {DataModule1: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TDataModule1, DataModule1);
+  Application.Run;
+end.

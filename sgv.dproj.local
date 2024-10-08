@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2024/10/04 14:00:42.000.899,=C:\Users\Secretaria Pibrp\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/10/04 14:02:55.000.114,C:\Users\Secretaria Pibrp\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\projects\Delphi\sgvWK\uPrincipal.pas</Transaction>
+    <Transaction>2024/10/04 14:02:55.000.114,C:\Users\Secretaria Pibrp\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\projects\Delphi\sgvWK\uPrincipal.dfm</Transaction>
+    <Transaction>2024/10/04 14:03:22.000.867,C:\Users\Secretaria Pibrp\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\projects\Delphi\sgvWK\sgv.dproj</Transaction>
+    <Transaction>2024/10/04 15:11:46.000.358,=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/04 15:12:45.000.030,C:\projects\Delphi\sgvWK\Views\uVendas.pas=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/04 15:12:45.000.030,C:\projects\Delphi\sgvWK\Views\uVendas.dfm=C:\projects\Delphi\sgvWK\Unit1.dfm</Transaction>
+    <Transaction>2024/10/04 18:03:34.000.810,=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/04 18:49:17.000.724,C:\projects\Delphi\sgvWK\DAO\DAOConection.dfm=C:\projects\Delphi\sgvWK\Unit1.dfm</Transaction>
+    <Transaction>2024/10/04 18:49:17.000.724,C:\projects\Delphi\sgvWK\DAO\DAOConection.pas=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/05 10:24:14.000.779,=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/05 10:25:10.000.270,C:\projects\Delphi\sgvWK\Unit1.pas=C:\projects\Delphi\sgvWK\Models\uClientModel.pas</Transaction>
+    <Transaction>2024/10/05 10:25:32.000.530,=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/05 10:26:04.000.360,C:\projects\Delphi\sgvWK\Unit1.pas=C:\projects\Delphi\sgvWK\Models\uProductModel.pas</Transaction>
+    <Transaction>2024/10/05 12:47:36.000.024,=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/05 12:48:23.000.921,C:\projects\Delphi\sgvWK\Unit1.pas=C:\projects\Delphi\sgvWK\Controllers\uClientController.pas</Transaction>
+    <Transaction>2024/10/05 18:20:57.000.312,C:\projects\Delphi\sgvWK\DAO\DAOConection.pas=</Transaction>
+    <Transaction>2024/10/06 13:55:00.000.712,=C:\projects\Delphi\sgvWK\DAO\DAOConection.pas</Transaction>
+    <Transaction>2024/10/06 17:34:31.000.803,=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+    <Transaction>2024/10/06 17:35:25.000.704,C:\projects\Delphi\sgvWK\Controllers\uProductController.pas=C:\projects\Delphi\sgvWK\Unit1.pas</Transaction>
+  </Transactions>
+</BorlandProject>

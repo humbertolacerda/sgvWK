@@ -1,0 +1,71 @@
+unit uClientController;
+
+interface
+Uses
+    uClientModel, System.SysUtils, Vcl.ExtCtrls, System.Classes, System.Json.Types, System.JSON.Writers, JSON;
+
+    Type
+        ClientController = class
+         private
+           { private declarations }
+         protected
+           { protected declarations }
+         public
+           { public declarations }
+           procedure SetUF(const Value: String);
+
+           Procedure SaveClient(cliente : TCliente);
+           Procedure DeleteClient(Id : Integer);
+           Function getClientID(Id : Integer): TCliente;
+           //Function getAllClient(): TList;
+
+         published
+           { published declarations }
+         end;
+implementation
+Uses
+    DAOConection;
+{ ClientController }
+
+procedure ClientController.DeleteClient(Id: Integer);
+begin
+    //
+end;
+
+function ClientController.getClientID(Id: Integer): TCliente;
+Var
+    vlJsonClient : String;
+    vlClienteModel : TCliente;
+    JsonCliente : TJsonArray;
+    vlJson: String;
+Begin
+    vlJson := dtmGeral.ExecSql( 'Select * from public.tbl_wk_clientes where id = ' + IntToStr(Id) );
+    vlClienteModel := TCliente.Create;
+
+    If (vlJson <> '[]') Then
+    Begin
+        JsonCliente := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(vlJson), 0);// As TJSONArray;
+
+        vlClienteModel.SetCodigo( JsonCliente.Get(0).GetValue<Integer>('Codigo', 0) );
+        vlClienteModel.SetNome( JsonCliente.Get(0).GetValue<String>('Nome', '') );
+        vlClienteModel.SetCidade( JsonCliente.Get(0).GetValue<String>('Cidade', '') );
+        vlClienteModel.SetUF( JsonCliente.Get(0).GetValue<String>('UF', '') );
+    End;
+    Result := vlClienteModel;
+
+
+    //    Cliente : TList;
+    //    Cliente := TList.Create;
+end;
+
+procedure ClientController.SaveClient(cliente: TCliente);
+begin
+
+end;
+
+procedure ClientController.SetUF(const Value: String);
+begin
+
+end;
+
+end.

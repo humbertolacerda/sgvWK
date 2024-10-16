@@ -8,7 +8,9 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.Client, FireDAC.Comp.DataSet,
-  uProductModel, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.DBCtrls, JSON;
+  uProductModel, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, Vcl.DBCtrls, JSON,
+  EMS.ResourceAPI, System.Generics.Collections, EMS.DataSetResource,
+  uProductController, uProdutoItemModel;
 
 type
   TfrmVendas = class(TForm)
@@ -38,6 +40,18 @@ type
     pnValorTotal: TPanel;
     btnFecharPedido: TBitBtn;
     Panel2: TPanel;
+    fdqVendasid: TFDAutoIncField;
+    fdqVendascliente_id: TIntegerField;
+    fdqVendasproduto_id: TIntegerField;
+    fdqVendasdescricao: TStringField;
+    fdqVendasquantidade: TBCDField;
+    fdqVendasvalor_unitario: TBCDField;
+    fdqVendasvalor_total: TBCDField;
+    btnBuscarPedido: TBitBtn;
+    Panel1: TPanel;
+    btnExcluir: TBitBtn;
+    Panel3: TPanel;
+    Timer1: TTimer;
     procedure btnCancelPedidoClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure edtClientIDKeyPress(Sender: TObject; var Key: Char);
@@ -46,12 +60,22 @@ type
     procedure edtQuantExit(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnFecharPedidoClick(Sender: TObject);
+    procedure dbgVendasKeyPress(Sender: TObject; var Key: Char);
+    procedure dbgVendasDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure dbgVendasKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnBuscarPedidoClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
     FProdutoModel: TProduto;
     FPreco: Double;
     FQuantidade: Double;
     function TrocaVirgulaPPonto(Valor: string): String;
+    Function IsOnlyNumber(const vlResposta: string): Boolean;
   public
     { Public declarations }
   end;
@@ -60,10 +84,13 @@ type
 var
   frmVendas: TfrmVendas;
   vpProdutoModel : TProduto;
+  vlProductController : TProdutoController;
+  vpNumeroPedido : Integer;
+
 
 implementation
 Uses
-    uClientController, DAOConection, uClientModel, uProductController;
+    uClientController, DAOConection, uClientModel;
 {$R *.dfm}
 
 Function  SomenteNumeros(Key: Char; Texto: string; EhDecimal: Boolean = False): Char;
@@ -94,6 +121,16 @@ begin
     Result := Key;
 end;
 
+Function TfrmVendas.IsOnlyNumber(const vlResposta: string): Boolean;
+Begin
+    Try
+        StrToInt(vlResposta);
+        Result := True;
+    Except
+        Result := False;
+    End;
+End;
+
 procedure TfrmVendas.btnCancelPedidoClick(Sender: TObject);
 Var
   vlClientController : ClientController;
@@ -106,17 +143,9 @@ begin
     Close;
 end;
 
-{*
-    Ações.
-    1. gera o Pedido para o cliente selecionado
-    2. Montar Array jSon com pedido e itens do pedido
-    3. Grava no banco de dados as informações do pedido de seus itens
-        para o cliente.
-*}
 procedure TfrmVendas.btnFecharPedidoClick(Sender: TObject);
 Var
     vlQuant, vlTotal, vlSoma : Double;
-    vlProductController : TProdutoController;
     JsonPedido, JSonObjItemVenda : TJSONObject;
     JsonItens : TJSONArray;
     vlTexto : String;
@@ -129,7 +158,7 @@ begin
      Try
          JsonPedido := TJSONObject.Create;
          JsonPedido.AddPair('Cliente', TJSONNumber.Create( StrToInt(edtClientID.Text) ) );
-         JsonPedido.AddPair('Emissao', FormatDateTime('dd/MM/yyyy', Date) );
+         JsonPedido.AddPair('Emissao', FormatDateTime('yyyy-MM-dd', Date) );
          JsonPedido.AddPair('ValorTotal', TJSONNumber.Create( vlTotal ));
 
          JsonItens := TJSONArray.Create;
@@ -150,8 +179,63 @@ begin
          JsonPedido.free;
          Close;
      Except
-
+        vlProductController.Free;
      End;
+     vlProductController.Free;
+end;
+
+procedure TfrmVendas.dbgVendasDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+    If State = [] then
+    Begin
+        If fdqVendas.RecNo mod 2 = 1 then
+            dbgVendas.Canvas.Brush.Color := clAqua
+        Else
+            dbgVendas.Canvas.Brush.Color := clWhite;
+    End;
+    dbgVendas.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfrmVendas.dbgVendasKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+Var
+    vlQuant, vlTotal, vlSoma : Double;
+    vlTexto : String;
+    vlPos : Integer;
+begin
+
+    If (Key = VK_DELETE) Then
+    Begin
+        If (MessageDlg('Confirma a remoção deste produto no pedido?',mtConfirmation,[mbYes,mbNo],0) = mrYes) Then
+        Begin
+            vlProductController := TProdutoController.Create();
+            If vlProductController.DeleteProisorio( dbgVendas.Fields[0].AsInteger) Then
+            Begin
+                fdqVendas.Refresh;
+                vlTotal := 0;
+                fdqVendas.First;
+                While (Not fdqVendas.Eof) Do
+                Begin
+                    vlTotal := vlTotal + fdqVendas.FieldByName('valor_total').AsFloat;
+                    fdqVendas.Next;
+                End;
+                fdqVendas.First;
+                pnValorTotal.Caption := FormatFloat(',0.00', vlTotal);
+            End;
+            vlProductController.Free;
+        End;
+    End;
+end;
+
+procedure TfrmVendas.dbgVendasKeyPress(Sender: TObject; var Key: Char);
+begin
+    If (Key = #13) Then
+    Begin
+       edtProductID.Text := dbgVendas.Fields[0].AsString;
+       edtProductID.ReadOnly := True;
+       edtProductID.SetFocus;
+    End;
 end;
 
 procedure TfrmVendas.edtClientIDExit(Sender: TObject);
@@ -185,7 +269,7 @@ begin
             fdqVendas.Close;
             fdqVendas.SQL.Clear;
             fdqVendas.SQL.Add('SELECT id, cliente_id, produto_id, descricao, quantidade, valor_unitario, valor_total ');
-	        fdqVendas.SQL.Add('FROM public.tbl_wk_provisorio ');
+	        fdqVendas.SQL.Add('FROM tbl_wk_provisorio ');
         	fdqVendas.SQL.Add('Where cliente_id = ' + edtClientID.Text);
             fdqVendas.Open;
             fdqVendas.Refresh;
@@ -201,10 +285,8 @@ end;
 
 procedure TfrmVendas.edtProductIDExit(Sender: TObject);
 Var
-    vlProductController : TProdutoController;
     vlQuant, vlValorUnit, vlTotal : Double;
 begin
-    //Buscar o produto pelo Model
    If (edtProductID.Text <> '') Then
     Begin
         edtProductName.Clear;
@@ -215,7 +297,6 @@ begin
         vpProdutoModel := TProduto.Create();
         vlProductController := TProdutoController.Create();
         vpProdutoModel := vlProductController.getProductByID(StrToInt( edtProductID.Text) );
-        vlProductController.Free;
 
         edtProductName.Text := vpProdutoModel.getDescricao;
         vlValorUnit := StrToFloat(StringReplace(edtValorUnit.Text, '.', ',', [rfReplaceAll]));
@@ -228,6 +309,7 @@ begin
             ShowMessage('Produto não encontrado.');
             edtProductID.SetFocus;
         End;
+        vlProductController.Free;
     End;
 end;
 
@@ -235,7 +317,6 @@ procedure TfrmVendas.edtQuantExit(Sender: TObject);
 Var
     vlQuant, vlTotal, vlSoma : Double;
     vlResposta, vlPos : Integer;
-    vlProductController : TProdutoController;
     Json : TJSONObject;
     vlTexto : String;
 begin
@@ -259,7 +340,6 @@ begin
             If (vlResposta  = mrYes) Then
             Begin
                 vlProductController := TProdutoController.Create();
-               // DecimalSeparator := '.';
 
                 vlTotal := (vlQuant * vpProdutoModel.getPreco);
                 Json := TJSONObject.Create;
@@ -317,11 +397,37 @@ begin
   frmVendas := Nil;
 end;
 
+procedure TfrmVendas.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+    If Key = VK_F2 Then
+        btnFecharPedidoClick(Sender);
+
+    If Key = VK_F3 Then
+        btnCancelPedidoClick(Sender);
+
+    If Key = VK_F4 Then
+        btnExcluirClick(Sender);
+
+    If Key = VK_F5 Then
+        btnBuscarPedidoClick(Sender);
+end;
+
 procedure TfrmVendas.FormShow(Sender: TObject);
 begin
     lblCidadeCliente.Caption := '';
     lblUFCliente.Caption := '';
     fdqVendas.Open();
+    vpNumeroPedido := 0;
+end;
+
+procedure TfrmVendas.Timer1Timer(Sender: TObject);
+begin
+    If (vpNumeroPedido > 0) Then
+        btnExcluir.Enabled := True
+    Else
+        btnExcluir.Enabled := False;
+
 end;
 
 function TfrmVendas.TrocaVirgulaPPonto(Valor: string): String;
@@ -329,5 +435,90 @@ begin
   Result := trim(StringReplace(Valor,',','.',[rfReplaceall]));
 end;
 
+procedure TfrmVendas.btnBuscarPedidoClick(Sender: TObject);
+Var
+    vlresposta : String;
+    vlLista : TObjectList<TProdutoItemModel>;
+    vlCount : Integer;
+    Json : TJSONObject;
+    vlTexto : String;
+    vlSoma: Double;
+begin
+    InputQuery('SGV - WK','Informe o código do pedido:',vlResposta);
+    If (vlResposta <> '') Then
+    Begin
+        If IsOnlyNumber(vlResposta) Then
+        Begin
+            vlProductController := TProdutoController.Create();
+            vlLista := vlProductController.getPedidoByID( StrToInt(vlResposta) );
+            fdqVendas.Open;
+
+            If (vlLista.Count > 0 ) Then
+            Begin
+                edtClientID.Text := vlLista[0].getCodigoCliente.ToString;
+                edtClientIDExit(Sender);
+                edtProductID.SetFocus;
+                vpNumeroPedido := vlLista[0].getCodigoPedido;
+
+                For vlCount := 0 To vlLista.Count -1  Do
+                Begin
+
+                    vlProductController := TProdutoController.Create();
+                    Json := TJSONObject.Create;
+                    Json.AddPair('Cliente', vlLista[vlCount].getCodigoCliente );
+                    Json.AddPair('ProdutoId', vlLista[vlCount].getCodigoProduto );
+                    Json.AddPair('Descricao', vlLista[vlCount].getDescricao );
+                    Json.AddPair('Quantidade', TJSONNumber.Create(vlLista[vlCount].getQuantidade) );
+                    Json.AddPair('PrecoUnitario', TJSONNumber.Create( vlLista[vlCount].getPrecoUnitario ) );
+                    Json.AddPair('ValorTotal', TJSONNumber.Create( vlLista[vlCount].getValorTotal ));
+                    vlProductController.setComporVenda( jSon.ToString );
+                    vlProductController.Free;
+                    vlSoma := vlSoma + vlLista[vlCount].getValorTotal;
+                    Json.Free;
+                    fdqVendas.Refresh;
+                End;
+                pnValorTotal.Caption := FormatFloat(',0.00', vlSoma);
+
+            End;
+
+        End Else Begin
+            ShowMessage('Por favor. Tente novamente digitando somente números');
+        End;
+
+    End;
+end;
+
+procedure TfrmVendas.btnExcluirClick(Sender: TObject);
+Var
+  vlSql, ClienteId : String;
+  vlClienteModel : TCliente;
+  vlClientController : ClientController;
+  vlResposta : Integer;
+begin
+    If (vpNumeroPedido > 0) Then
+    Begin
+        vlResposta := MessageDlg('Confirma a confirma a exclusão deste pedido', mtConfirmation, [mbYes, mbNo], 0);
+
+        If (vlResposta = mrYes) Then
+        Begin
+            vlProductController := TProdutoController.Create();
+            vlProductController.DeletePedido( vpNumeroPedido );
+            vlClientController := ClientController.Create();
+
+            edtClientName.Clear;
+            lblCidadeCliente.Caption := '';
+            lblUFCliente.Caption := '';
+            vlClientController.DeleteProvisorioByCliente(StrToInt(edtClientID.Text) );
+            edtClientID.Clear;
+            pnValorTotal.Caption := FormatFloat(',0.00', 0);
+            fdqVendas.Close;
+            vlClientController.Free;
+            fdqVendas.Open;
+            ShowMessage('Pedido Nº (' + IntToStr(vpNumeroPedido) + ') excluído com sucesso.' );
+            vpNumeroPedido := -1;
+        End;
+
+    End;
+end;
 
 end.

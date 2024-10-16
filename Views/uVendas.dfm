@@ -12,9 +12,11 @@ object frmVendas: TfrmVendas
   Font.Name = 'Segoe UI'
   Font.Style = []
   FormStyle = fsMDIChild
+  KeyPreview = True
   Position = poDesktopCenter
   Visible = True
   OnClose = FormClose
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   TextHeight = 15
   object pnTop: TPanel
@@ -192,12 +194,13 @@ object frmVendas: TfrmVendas
       Align = alBottom
       BevelKind = bkFlat
       BevelOuter = bvNone
-      TabOrder = 0
+      TabOrder = 1
       object pnValorTotal: TPanel
-        Left = 368
-        Top = 0
+        AlignWithMargins = True
+        Left = 358
+        Top = 3
         Width = 245
-        Height = 75
+        Height = 69
         Margins.Left = 10
         Margins.Right = 10
         Align = alRight
@@ -216,23 +219,33 @@ object frmVendas: TfrmVendas
       end
     end
     object dbgVendas: TDBGrid
-      Left = 1
-      Top = 57
-      Width = 617
-      Height = 593
+      AlignWithMargins = True
+      Left = 11
+      Top = 67
+      Width = 597
+      Height = 573
       Margins.Left = 10
       Margins.Top = 10
       Margins.Right = 10
       Margins.Bottom = 10
       Align = alClient
       DataSource = dtsVendas
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = []
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-      TabOrder = 1
+      ParentFont = False
+      TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
       TitleFont.Height = -12
       TitleFont.Name = 'Segoe UI'
       TitleFont.Style = []
+      OnDrawColumnCell = dbgVendasDrawColumnCell
+      OnKeyDown = dbgVendasKeyDown
+      OnKeyPress = dbgVendasKeyPress
       Columns = <
         item
           Expanded = False
@@ -245,11 +258,10 @@ object frmVendas: TfrmVendas
           Expanded = False
           FieldName = 'descricao'
           Title.Caption = 'Descri'#231#227'o do Produto'
-          Width = 273
+          Width = 266
           Visible = True
         end
         item
-          Alignment = taRightJustify
           Expanded = False
           FieldName = 'quantidade'
           Title.Caption = 'Quantidade'
@@ -257,15 +269,13 @@ object frmVendas: TfrmVendas
           Visible = True
         end
         item
-          Alignment = taRightJustify
           Expanded = False
           FieldName = 'valor_unitario'
           Title.Caption = 'Valor Unit'#225'rio'
-          Width = 88
+          Width = 78
           Visible = True
         end
         item
-          Alignment = taRightJustify
           Expanded = False
           FieldName = 'valor_total'
           Title.Caption = 'Valor Total'
@@ -292,12 +302,12 @@ object frmVendas: TfrmVendas
     Align = alBottom
     TabOrder = 2
     object btnCancelPedido: TBitBtn
-      Left = 172
+      Left = 211
       Top = 1
-      Width = 161
+      Width = 198
       Height = 46
       Align = alLeft
-      Caption = 'Cancelar Pedido'
+      Caption = 'F3 - &Cancelar Pedido'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -310,10 +320,10 @@ object frmVendas: TfrmVendas
     object btnFecharPedido: TBitBtn
       Left = 1
       Top = 1
-      Width = 161
+      Width = 200
       Height = 46
       Align = alLeft
-      Caption = 'Fechar Pedido'
+      Caption = 'F2 - &Fechar Pedido'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -324,7 +334,7 @@ object frmVendas: TfrmVendas
       OnClick = btnFecharPedidoClick
     end
     object Panel2: TPanel
-      Left = 162
+      Left = 409
       Top = 1
       Width = 10
       Height = 46
@@ -332,21 +342,121 @@ object frmVendas: TfrmVendas
       Alignment = taLeftJustify
       TabOrder = 2
     end
+    object btnBuscarPedido: TBitBtn
+      Left = 623
+      Top = 1
+      Width = 194
+      Height = 46
+      Align = alLeft
+      Caption = 'F5 - &Buscar Pedido'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 3
+      OnClick = btnBuscarPedidoClick
+    end
+    object Panel1: TPanel
+      Left = 201
+      Top = 1
+      Width = 10
+      Height = 46
+      Align = alLeft
+      Alignment = taLeftJustify
+      TabOrder = 4
+    end
+    object btnExcluir: TBitBtn
+      Left = 419
+      Top = 1
+      Width = 194
+      Height = 46
+      Align = alLeft
+      Caption = 'F4 - &Excluir Pedido'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 5
+      OnClick = btnExcluirClick
+    end
+    object Panel3: TPanel
+      Left = 613
+      Top = 1
+      Width = 10
+      Height = 46
+      Align = alLeft
+      Alignment = taLeftJustify
+      TabOrder = 6
+    end
   end
   object fdqVendas: TFDQuery
     Connection = dtmGeral.fdConection
     SQL.Strings = (
       'SELECT id, cliente_id, produto_id, descricao, quantidade, '
       'valor_unitario, valor_total'
-      'FROM public.tbl_wk_provisorio'
+      'FROM tbl_wk_provisorio'
       'Where cliente_id = 0')
     Left = 576
     Top = 249
+    object fdqVendasid: TFDAutoIncField
+      FieldName = 'id'
+      Origin = 'id'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object fdqVendascliente_id: TIntegerField
+      FieldName = 'cliente_id'
+      Origin = 'cliente_id'
+      Required = True
+    end
+    object fdqVendasproduto_id: TIntegerField
+      FieldName = 'produto_id'
+      Origin = 'produto_id'
+      Required = True
+    end
+    object fdqVendasdescricao: TStringField
+      FieldName = 'descricao'
+      Origin = 'descricao'
+      Required = True
+      Size = 120
+    end
+    object fdqVendasquantidade: TBCDField
+      FieldName = 'quantidade'
+      Origin = 'quantidade'
+      Required = True
+      Precision = 12
+      Size = 3
+    end
+    object fdqVendasvalor_unitario: TBCDField
+      FieldName = 'valor_unitario'
+      Origin = 'valor_unitario'
+      Required = True
+      DisplayFormat = '#,###0.00'
+      Precision = 12
+      Size = 2
+    end
+    object fdqVendasvalor_total: TBCDField
+      FieldName = 'valor_total'
+      Origin = 'valor_total'
+      Required = True
+      DisplayFormat = '#,###0.00'
+      Precision = 12
+      Size = 2
+    end
   end
   object dtsVendas: TDataSource
     AutoEdit = False
     DataSet = fdqVendas
     Left = 720
     Top = 240
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 824
+    Top = 248
   end
 end

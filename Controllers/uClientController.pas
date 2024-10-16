@@ -41,7 +41,7 @@ Var
     JsonCliente : TJSONObject; //TJsonArray;
     vlJson: String;
 Begin
-    vlJson := dtmGeral.ExecSql( 'Select * from public.tbl_wk_clientes where id = ' + IntToStr(Id) );
+    vlJson := dtmGeral.ExecSql( 'Select * from tbl_wk_clientes where codigo = ' + IntToStr(Id) );
     vlClienteModel := TCliente.Create;
 
     If (vlJson <> '[]') Then
@@ -75,7 +75,7 @@ Var
   vlSql, vlDesc : String;
 begin
 
-    vlSql := 'Delete from public.tbl_wk_provisorio where cliente_id = ' + IntToStr(id);
+    vlSql := 'Delete from tbl_wk_provisorio where cliente_id = ' + IntToStr(id);
     dtmGeral.InsertSql(vlSql);
 
 end;

@@ -8,7 +8,8 @@ uses
   uProductModel in 'Models\uProductModel.pas',
   uClientController in 'Controllers\uClientController.pas',
   DAOConection in 'DAO\DAOConection.pas' {dtmGeral: TDataModule},
-  uProductController in 'Controllers\uProductController.pas';
+  uProductController in 'Controllers\uProductController.pas',
+  uProdutoItemModel in 'Models\uProdutoItemModel.pas';
 
 {$R *.res}
 
